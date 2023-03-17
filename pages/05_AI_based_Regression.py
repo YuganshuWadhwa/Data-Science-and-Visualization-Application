@@ -135,17 +135,12 @@ if working_df is not None :
 					regressor = RF_Regression(data_obj)
 
 					# generating and saving trained model
-					filename = 'model_regression_rf.sav'
+					filename = 'model_rf_regression.sav'
 
-					st.session_state['save_model'] = False
-					st.session_state['save_model'] = st.button(label = 'Save Trained Model', type = 'primary')
+					# auto-saving the model in local system
+					pickle.dump(data_obj.model, open(filename, 'wb'))
 
-					# saving the model in local system
-					if st.session_state['save_model'] :
-						pickle.dump(data_obj.model, open(filename, 'wb'))
-
-					st.session_state['save_model'] = False
-
+					st.warning('Trained Model Saved as .sav File')
 
 					st.markdown('# ')
 
@@ -321,22 +316,16 @@ if working_df is not None :
 						'''
 						function to generate a .zip file for trained model and save in the local system
 						'''
-						dir = './keras_model_regression_nn'
-						filename = 'keras_model_regression_nn'
+						dir = './keras_model_nn_regression'
+						filename = 'keras_model_nn_regression'
 						data_obj.model.save(dir)
 						shutil.make_archive(filename, 'zip', dir)
 
 					st.markdown('# ')
 
-					st.session_state['save_model'] = False
-					st.session_state['save_model'] = st.button(label = 'Save Trained Model', type = 'primary')
+					save_keras_model(data_obj)
 
-					# creating zip file by calling the function
-					if st.session_state['save_model'] :
-						save_keras_model(data_obj)
-
-					st.session_state['save_model'] = False
-
+					st.warning('Trained Model Saved as .zip File')
 
 					st.markdown('# ')
 
@@ -386,7 +375,7 @@ if working_df is not None :
 					if zip_name is not None :
 
 						zip_name = zip_name.name
-						dir = './keras_model_regression_nn'
+						dir = './keras_model_nn_regression'
 
 						with ZipFile(zip_name, 'r') as zip:
 							zip.extractall(path=dir)

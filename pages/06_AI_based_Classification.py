@@ -128,20 +128,15 @@ if method == 'Neural Networks' :
 
 				def save_keras_model(data_obj) :
 					dir = './keras_model_classification_nn'
-					filename = 'keras_model_classification_nn'
-					data_obj.model.save(dir)
+					filename = './keras_model_nn_classification'
+					data_obj.model.save(filename)
 					shutil.make_archive(filename, 'zip', dir)
 
 				st.markdown('# ')
 
-				st.session_state['save_model'] = False
-				st.session_state['save_model'] = st.button(label = 'Save Trained Model', type = 'primary')
+				save_keras_model(data_obj)
 
-				if st.session_state['save_model'] :
-					save_keras_model(data_obj)
-
-				st.session_state['save_model'] = False
-
+				st.warning('Trained Model Saved as .zip File')
 
 				st.markdown('# ')
 
@@ -184,7 +179,7 @@ if method == 'Neural Networks' :
 				if zip_name is not None :
 
 					zip_name = zip_name.name
-					dir = './keras_model_classification_nn'
+					dir = './keras_model_nn_classification'
 
 					with ZipFile(zip_name, 'r') as zip:
 						zip.extractall(path=dir)
@@ -271,16 +266,11 @@ if method == 'Random Forest' :
 				classifier = RF_Classification(data_obj)
 
 
-				filename = 'model_classification_rf.sav'
+				filename = 'model_rf_classification.sav'
 
-				st.session_state['save_model'] = False
-				st.session_state['save_model'] = st.button(label = 'Save Trained Model', type = 'primary')
+				pickle.dump(data_obj.model, open(filename, 'wb'))
 
-				if st.session_state['save_model'] :
-					pickle.dump(data_obj.model, open(filename, 'wb'))
-
-				st.session_state['save_model'] = False
-
+				st.warning('Trained Model Saved as .sav File')
 
 				st.markdown('# ')
 
