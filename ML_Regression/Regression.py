@@ -94,7 +94,7 @@ class Regression:
                 self.y_pred = self.regression.predict(self.x_test)
                 self.y_pred2 = self.regression.predict(self.x_train)
 
-                joblib.dump(self.regression, 'saved_model.pkl')
+                # joblib.dump(self.regression, 'saved_model.pkl')
 
 
                 self.mse_test = [str(self.regression_name), round(mean_squared_error(self.y_test, self.y_pred), 3)]
