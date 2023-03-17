@@ -127,7 +127,7 @@ if method == 'Neural Networks' :
 				classifier = NN_Classification(data_obj)
 
 				def save_keras_model(data_obj) :
-					dir = './keras_model_classification_nn'
+					dir = './keras_model_nn_classification'
 					filename = './keras_model_nn_classification'
 					data_obj.model.save(filename)
 					shutil.make_archive(filename, 'zip', dir)
