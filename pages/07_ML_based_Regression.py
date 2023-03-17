@@ -130,7 +130,7 @@ if working_df is not None :
 
 			kernel = test_col_9.selectbox(label = 'Select kernel', options = ['linear', 'poly', 'rbf', 'sigmoid'], index = 2)
 			degree = test_col_10.slider(label = 'Select degree', min_value = 0, max_value =10, value = 3)
-			svmNumber = test_col_11.slider(label = 'Select svmNumber', min_value = 0., max_value =10, value = 500, step = 10)
+			svmNumber = test_col_11.slider(label = 'Select svmNumber', min_value = 0, max_value =10, value = 500, step = 10)
 
 			maxIterations = test_col_12.slider(label = 'Select maxIterations', min_value = -1, max_value =15000, value = -1)
 			epsilon = test_col_103.slider(label = 'Select epsilon', min_value = 0.1, max_value =1., value = 0.5, step = 0.1)
