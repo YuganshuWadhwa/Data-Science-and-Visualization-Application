@@ -1,0 +1,10 @@
+Variable,Room,Floor,Terrestrial direction
+T1 and RH_1,Kitchen Area,1,Centre of ground floor
+T2 and RH_2,Living Room Area,1,East end
+T3 and RH_3,Laundry Room Area,1,North side (next to garage)
+T4 and RH_4,Office Room,1,South-West corner
+T5 and RH_5,Main Bathroom,2,North-West corner
+T6 and RH_6,Outside,2,North side (above garage)
+T7 and RH_7,Ironing Room,2,South-Centre
+T8 and RH_8,Teenager Room 1,2,South-Centre
+T9 and RH_9,Parents Room (Bedroom),2,Eastside
