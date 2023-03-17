@@ -1,45 +1,37 @@
-import array
 import numpy as np
 import pandas as pd
-from sklearn.svm import NuSVR
+import joblib
+from scipy import stats
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.svm import NuSVR
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import HuberRegressor
-import seaborn as sns 
-import streamlit as st
-
+from sklearn.svm import SVR
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.tree import DecisionTreeRegressor
 class Regression:
     
     ############### Load Pandas Dataframe ###############
-    
-    def __init__(self, dataframe):
+    def __init__(self, Data):
        #For testing taking data from csv 
-        self.data = dataframe
-        if isinstance(self.data, pd.DataFrame):
-            self.dataframe_1 = self.data
-            self.dataframe_shape = self.data.shape
+        self.data = Data
+        if isinstance(Data, pd.DataFrame):
+            self.dataframe_1 = Data
+            self.dataframe_shape = Data.shape
             self.dropColumns()
         else:
             raise Exception("No pandas dataframe was given!")
-
-    ############### Drop Columns for Regression ###############
-
-    def dropColumns(self, label_drop='date'):
-
-        self.dataframe=self.dataframe_1.drop(label_drop, axis=1)
-
-        print("Column: ", label_drop, " is deleted.")
-
         
+    ############### Drop Columns for Regression ###############
+    def dropColumns(self, label_drop='date'):
+        self.dataframe=self.dataframe_1.drop(label_drop, axis=1)
+        print("Column: ", label_drop, " is deleted.")
+    
     ############### Dividing Data into Training and Test ###############
-      
-    def split_train_test(self,label_target, testsize=0.3, random_state=1, deleting_na=False, scaling=False, deleting_duplicates=False):
+    def split_train_test(self,label_target="lights", rows_to_keep = 16000, testsize=0.2, random_state=42, deleting_na=True, scaling=True, deleting_duplicates=True,remove_noise = True, cols_to_keep = []):
+            self.cols_to_keep = cols_to_keep
+            self.dataframe = self.dataframe[self.cols_to_keep + [label_target]]           
+            self.dataframe = self.dataframe.head(rows_to_keep)
 
             # set column targeted by the user as target label for the whole instance
             if (label_target in self.dataframe.columns.values):
@@ -55,17 +47,24 @@ class Regression:
 
             if deleting_na:
                 self.dataframe = self.dataframe.dropna()
-                # st.write("Data has been preprocessed!")
-
-            if scaling:
-                scaler = StandardScaler()
-                self.dataframe = pd.DataFrame(scaler.fit_transform(self.dataframe), columns=self.dataframe.columns)
-                # self.dataframe = scaler.transform(dataframe)
-                # st.write("Data has been rescalled!")
-
+                # st.write("Data has been preprocessed!"
+            
             if deleting_duplicates:
                 self.dataframe.drop_duplicates(keep='first', inplace=True)
                 # st.write("Duplicates have been deleted!")
+            
+            if scaling:
+                self.scaler = MinMaxScaler(feature_range=(0,5))
+                self.dataframe = pd.DataFrame(self.scaler.fit_transform(self.dataframe), columns=self.dataframe.columns)
+
+            if remove_noise:
+                 self.max_vals = self.dataframe.max()
+                 self.max_vals = self.max_vals.mean()
+                 self.max_vals = 1.5
+                 self.threshold = self.max_vals
+                 print('Threshold = ' , self.max_vals)
+                 z_scores = np.abs(stats.zscore(self.dataframe[self.cols_to_keep  + [label_target]]))
+                 self.dataframe = self.dataframe[(z_scores < self.threshold).all(axis=1)]
 
             self.x = self.dataframe.drop(label_target, axis=1)
             self.y = self.dataframe[[label_target]]
@@ -73,138 +72,163 @@ class Regression:
 
             self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.x, self.y, test_size=testsize,random_state=random_state)
 
+            print("The given data is seperated into test and training data for the given Target Label")
+            print("Train data size for x:", self.x_train.shape)
+            print("Train data size for y:", self.y_train.shape)
+
             self.data_splitted = True
 
-        
     ############### Create the Regression Model ###############
-
     def build_regression(self, regression_name="Support Vector Machine Regression", **args):
             self.regression_name=regression_name
             if self.data_splitted:
-                if regression_name == "Support Vector Machine Regression":
-                    self.regression = self.svm_regression(**args)
-                elif regression_name == "Polynomial Regression":
-                    self.regression = self.polynomial_regression(**args)
-                elif regression_name == "Ridge Regression":
-                    self.regression = self.ridge_regression(**args)
-                elif regression_name == "Multiple Linear Regression":
-                    self.regression = self.linear_regression(**args)
-                elif regression_name == "Huber Regression":
-                    self.regression = self.huber_regression(**args)
+                if self.regression_name == "Support Vector Machine Regression":
+                    self.regression = self.svm_regression(**args)                    
+                elif self.regression_name == "Gradient Boosting Regression":
+                    self.regression = self.Gradient_boosting_regression(**args)
+                elif self.regression_name == "Decision Tree":
+                    self.regression = self.decisionTree(**args)  
                 else:
                     raise Exception(
                         "Regression was not found! Avialable options are Support Vector Machine Regression (SVM), Polynomial Regression, Ridge Regression, Multiple Linear Regression, Robust Regression.")
-               
-                if regression_name == "Polynomial regression":
-                    self.y_pred = self.regression.predict(self.poly.fit_transform(self.x_test))
-                else:
-                    self.y_pred = self.regression.predict(self.x_test)
-#Prams includes method name, MSE and r2_score .. need to show with graph 
-                params = [str(regression_name),
-                          round(mean_squared_error(self.y_test, self.y_pred), 4),
-                          round(r2_score(self.y_test, self.y_pred), 4)]
-                self.params=params
-                return self.regression, params
-                
+                self.y_pred = self.regression.predict(self.x_test)
+                self.y_pred2 = self.regression.predict(self.x_train)
+
+                joblib.dump(self.regression, 'saved_model.pkl')
+
+
+                self.mse_test = [str(self.regression_name), round(mean_squared_error(self.y_test, self.y_pred), 3)]
+                self.mse_train = [str(self.regression_name), round(mean_squared_error(self.y_train, self.y_pred2), 3)]
+                self.r2_test = [str(self.regression_name),  round(r2_score(self.y_test, self.y_pred), 3)]
+                self.r2_train = [str(self.regression_name),  round(r2_score(self.y_train, self.y_pred2), 3)]            
+                print('MSE errors', self.mse_test)
+                print("For Test Data")
+                print('R2 errors', self.r2_test)
+                print("For Training Data")
+                print('MSE errors', self.mse_train)
+                print('R2 errors', self.r2_train)
             else:
                 print("The data has to be splitted in train and test data befor a regression can be build (use the split_train_test method).")
-
-
-      
-    def svm_regression(self, kernel='rbf', degree=3, svmNumber=0.5, maxIterations=-1):
-        svm = NuSVR(kernel=kernel, degree=degree, nu=svmNumber, max_iter=maxIterations)
+    
+    def Gradient_boosting_regression(self, alpha= 0.1, max_depth=10, min_samples_leaf=10, n_estimators=200, learning_rate=0.2):
+        eln = GradientBoostingRegressor( alpha=alpha, max_depth=max_depth, min_samples_leaf=min_samples_leaf, n_estimators=n_estimators, learning_rate=learning_rate)
+        return eln.fit(self.x_train, self.y_train)
+    
+    def svm_regression(self, kernel='rbf', degree=3, svmNumber=100, epsilon=0.1, maxIterations=-1):
+        svm = SVR(kernel=kernel, degree=degree, C=svmNumber,epsilon=epsilon ,max_iter=maxIterations)
         return svm.fit(self.x_train, self.y_train)
     
-    def polynomial_regression(self,degree=4):
-        self.poly = PolynomialFeatures(degree)
-        X_train_poly = self.poly.fit_transform(self.x_train)
-        self.poly.fit(X_train_poly, self.y_train)
-        self.regressor = LinearRegression()
-        return self.regressor.fit(X_train_poly, self.y_train)
-
-    def ridge_regression(self, max_iter=15000, solver='auto'):
-        clf = Ridge(max_iter=max_iter, solver=solver)
+    def decisionTree(self,splitter='best', max_depth=200, min_samples_split=2, min_samples_leaf=1, max_leaf_nodes=1500):
+        clf = DecisionTreeRegressor( splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split, min_samples_leaf = min_samples_leaf , max_leaf_nodes=max_leaf_nodes )
         return clf.fit(self.x_train, self.y_train)
     
-    def linear_regression(self):
-        reg = LinearRegression()
-        return reg.fit(self.x_train, self.y_train)
-        
-    def huber_regression(self, max_iter=15000):
-        huber = HuberRegressor(max_iter=max_iter)
-        return huber.fit(self.x_train, self.y_train)
-     
-    ############### Plot Data in 2D Graph with regression ###############
-    
-    def plot_regression_1(self):
+    ############### Plot test Data in 2D Graph with regression ###############s
+    def plot_test_data(self):
         try:
-            fig, ax = plt.subplots()
-
-            ax.scatter(self.y_test, self.y_pred, label='data')
-            
-            x_values = [self.y_test.min(), self.y_test.max()]
-            y_values = [self.y_pred.min(), self.y_pred.max()]
-            
+            fig, (ax1,ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))
+            ax1.scatter(self.y_test, self.y_pred, label='data', color='blue')
             max_val = np.max(np.abs(self.y))
+            max_val = round(max_val*1.3) 
+            ax1.set_xlim(0, max_val)
+            ax1.set_ylim(0, max_val)
+            line_x = np.arange(self.y_test.min(), self.y_test.max(), 0.1)
+            line_y = line_x
+            ax1.plot(line_x, line_y, color='red', label='best fit line')
+            ax1.set_title('y_test vs predictions')
+            ax1.set_xlabel("y_test")
+            ax1.set_ylabel("y_pred")          
+            ax1.legend()
+            ax1.grid(True)
 
-            ax.set_xlim(-5, max_val*0.8)
-            ax.set_ylim(-5, max_val*0.8)
+            ax2.plot(self.y_test[:50], color='blue', label='Real data')
+            ax2.plot(self.y_pred[:50], color='red', label='Predicted data')
+            ax2.set_title('y_test vs predictions')
+            ax2.set_ylim(0, max_val)
+            ax2.legend()
+            ax2.grid(True)
 
-            if self.regression_name == "Polynomial regression":
-                ax.plot(np.unique(self.y_test), np.poly1d(np.polyfit(self.y_test, self.y_pred, 1))(np.unique(self.y_test)),color='red', label='fittedmodel')
-                ax.set_title('Polynomial Regression')
-
-            elif self.regression_name == "Ridge Regression ":
-                ax.plot(self.y_test,np.poly1d(np.polyfit(self.y_test, self.y_pred, 1.9))(self.y_test),"r", label='fittedmodel')
-                ax.set_title('Ridge Regression')
-
-            else:
-                ax.plot(x_values,y_values,'r--', lw=2, label='fittedmodel')
-                ax.set_title('Regression')
-           
-
-            ax.set_xlabel("y_test")
-            ax.set_ylabel("y_pred")
+            self.fig_test = fig
+            # plt.show()      
             
-            ax.legend()
-            self.fig = fig   
-     
         except:
             print("Something went wrong. Check your Inputs.")
     
-    
+    ############ Plot train Data in 2D Graph with regression ###############
+    def plot_train_data(self):
+         try:
+            fig, (ax3,ax4) = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))            
+            ax3.scatter(self.y_train, self.y_pred2, label='data',color='blue')
+            max_val = np.max(np.abs(self.y))
+            max_val = round(max_val*1.3) 
+            ax3.set_xlim(0, max_val)
+            ax3.set_ylim(0, max_val)
+            line_x = np.arange(self.y_train.min(), self.y_train.max(), 0.1)
+            line_y = line_x
+            ax3.plot(line_x, line_y, color='red', label='best fit line')
+            ax3.set_title('y_train vs predictions')
+            ax3.set_xlabel("y_train")
+            ax3.set_ylabel("y_pred")          
+            ax3.legend()         
+            ax3.grid(True)
+
+            ax4.plot(self.y_train[:50], color='blue', label='Real data')
+            ax4.plot(self.y_pred2[:50], color='red', label='Predicted data')
+            ax4.set_title('y_train vs predictions')
+            ax4.set_ylim(0, max_val)     
+            ax4.legend()
+            ax4.grid(True)
+            
+            self.fig_train = fig
+            # plt.show()           
         
-        
+         except:
+            print("Something went wrong. Check your Inputs.")
+
     ############### Predict User Inputs ###############
-
     def regression_function(self, user_input):
-            # check wether user input is given as Pandas Dataframe
-            if isinstance(user_input, pd.DataFrame):
-                user_input = user_input
-                st.write("User Input is given as Pandas Dataframe!")                    # extra info
-                # Check wether number of user inputs is correct
-                if len(user_input.columns) == (len(self.dataframe.columns)-1):
-                    st.write("Number of Input variables fits the function!")               # extra info
-                    self.result = round(self.regression.predict(user_input)[0], 2)
-                    st.write('The prediction for the target label "', self.label_target, '" is ', self.result, '.')    # actual result
-                    return self.result
+        #check wether user input is given as Pandas Dataframe
+        user_input = pd.DataFrame(self.scaler.fit_transform(user_input), columns=user_input.columns)
 
-                else:
-                    st.write('Length of Entered Data (' + str(len(user_input.columns)) + ') is unequal to the Lenght of Training Data (' + str(len(self.dataframe.columns)-1) + ')')
+        if isinstance(user_input, pd.DataFrame):
+            user_input = user_input 
+            print("User Input is given as Pandas Dataframe!")
+            #Check wether number of user inputs is correct 
+            if len(user_input.columns) == (len(self.dataframe.columns)-1): 
+                print("Number of Input variables fits the function!") 
+                result = round(self.regression.predict(user_input)[0], 2)                
+                user_input= np.array(user_input)
+                result = np.array(result)
+                self.final_prediction = user_input + result
+                self.final_prediction = pd.DataFrame(self.scaler.inverse_transform(self.final_prediction))
+                print('The prediction for the target label ', self.label_target, '" is ', self.final_prediction.iloc[:, [-1],'.'])              
+                return result 
             else:
-                st.write(
-                    "User Input is not correct. Check wether the Input is converted as a Pandas Dataframe and the length of the input frame is correct."
-                    "The active dataframe allows ", (len(self.dataframe.columns) - 1),
-                    " input variables. The predicted colum is ", self.label_target)             # warning
-            # default return value if function did not execute successfully
-            return None
-    
-    ############### Get Pandas Dataframe Description ###############
-     
-    def get_dataframe_head(self):
-        """Return the head of the dataframe.
+                print('Input data should be in this formate ',self.cols_to_keep)
+        else:
+            print( "User Input is not correct. Check wether the Input is converted as a Pandas Dataframe and the length of the input frame is correct."
+                  "The active dataframe allows ", (len(self.dataframe.columns) - 1),
+                  " input variables. The predicted colum is ", self.label_target)
+        return None   
 
-        :return: Dataframe Head
-        """
 
-        return self.dataframe.head()
+
+
+
+
+#### Below code is to check how the code is working 
+
+# d = pd.read_csv('filtered_to_munam.csv') # dataframe
+# classa = Regression(d)
+
+# f='Appliances'
+# A = classa.split_train_test(f)
+
+# AA = classa.build_regression()
+
+# classa.plot_test_data()
+
+# classa.plot_train_data()
+
+# user_input = pd.read_csv('UserInput - Copy.csv') # dataframe
+# classa.regression_function(user_input)
+

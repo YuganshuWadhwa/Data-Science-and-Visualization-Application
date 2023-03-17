@@ -3,7 +3,7 @@ import pandas as pd
 
 # import necessary class definitions from relevant packages
 from GUI.GUI_Class import GUI_class
-from ML_Regression.OOP_Regression import Regression
+from ML_Regression.Regression import Regression
 
 
 # Setup for page configuration
