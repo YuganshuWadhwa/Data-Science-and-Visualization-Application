@@ -3,6 +3,7 @@ import numpy as np
 from numpy import random
 import pandas as pd
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 class GUI_class :
@@ -189,6 +190,14 @@ class GUI_class :
         if choice == 'About The Data' :
             st.markdown("<div style ='text-align: justify;'> Data was collected over a timeframe of <b>137 days</b> from Jan. 11 to May 27, 2016, representing weather from winter to beginning of summer in central Europe. Measurements inside the house were taken every 3.3 minutes and averaged to 10 minutes time intervals. The outside weather data was measured in hourly intervals and enriched to 10 minutes time intervals by linear interpolation.<br> </div>", unsafe_allow_html = True)
             st.markdown("<div style ='text-align: justify;'> <br>The house used for the measurements has 280 square meters, but only 220 square meters are heated. The rooms were spread over two floors. The majority of the heating capacity is provided by a wood chimney. Overall, four people live in the house, two adults and two teenagers. One of the adults works from a home-office on a regular basis. The time is recorded in a 10 minutes interval format which includes year, month, day, minutes and seconds. Furthermore, the energy consumption by appliances and lightning applications (in kWh) is given. <br><br> </div>", unsafe_allow_html = True)
+
+            st.markdown("# ")
+
+            image = Image.open('./images/floor_plan.png')
+            image = image.resize((700, 350))
+            st.image(image, caption='Floor Plan of the House')
+
+            st.markdown("# ")
 
             st.markdown("""
 
