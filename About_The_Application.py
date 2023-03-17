@@ -140,6 +140,7 @@ with features_cont :
 		- It is necessary to ***load the "Data Upload and Preview"*** page and ***select / upload / change the working dataset***, before proceeding any further through the application.
 		- In order to generate the ***Processed Data*** for regression, please use the ***Outlier Recognition***, ***Interpolation*** and ***Smoothing*** (in the mentioned order).
 		- After choosing the desired parameters on the "Data Smoothing" page, ***please press "Smoothen Complete Dataframe"*** to finally generate processed data.
+		- While training new AI models, the trained models are ***automatically saved*** in the working root directory.
 		- On each page, some ***generic*** and ***method- specific*** information is provided.
 		- Look out for ***hints*** :bulb: on each page for further assistance regarding the ***type of datasets the page works best with***.
 		- In some of the pages, ***tooltips*** :grey_question: are provided for further assistance regarding the ***parameters***.
