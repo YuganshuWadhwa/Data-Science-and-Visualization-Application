@@ -61,9 +61,11 @@ with inputs_cont :
 		# st.latex		display mathematical expressions formatted as LaTeX
 		st.latex(r'''
 
-			\frac{x - mean}{standard\, deviation}
+			z = \frac{x_{i} - \mu_{X}}{\sigma_{X} }
 
 			''')
+		
+		st.markdown('where $x_{i}$ is the $i_{th}$ data point, $\mu_{X}$ is the mean, and $\sigma_{X}$ is the standard deviation of vector $X$.')
 
 		st.markdown("<div style ='text-align: justify;'><br>A z-score of 2 indicates that the score is two standard deviations above the mean. If you set a threshold of 2 for identifying outliers, any score with a z-score greater than 2 would be considered an outlier. </b></div>", unsafe_allow_html = True)
 		st.markdown("<div style ='text-align: justify;'>The z-score method is useful for identifying outliers in datasets where the data is normally distributed. However, it may not be appropriate for datasets with non-normal distributions or datasets with extreme outliers that can skew the mean and standard deviation. </b></div>", unsafe_allow_html = True)
@@ -112,9 +114,11 @@ with inputs_cont :
 
 		st.latex(r'''
 
-			mod\; z \; = \; 0.6745 \times \frac{x_{i} - median(x)}{MAD}
+			mod\; z \; = \; 0.6745 \times \frac{x_{i} - median(X)}{MAD}
 
 			''')
+		
+		st.markdown('where $x_{i}$ is the $i_{th}$ data point, $median(X)$ is the median of the dataset, and $MAD$ is the median absolute deviation of vector $X$.')
 
 		st.markdown("<div style ='text-align: justify;'><br>A data point is considered an outlier if its modified z-score is greater than a certain threshold value. The threshold value is typically set to 3.5 or 4, although it can vary depending on the specific application. </div>", unsafe_allow_html = True)
 		st.markdown("<div style ='text-align: justify;'><br>The advantage of using the modified z-score over the standard z-score is that it is more robust to outliers. The MAD is less sensitive to extreme values than the standard deviation, which means that the modified z-score is less likely to misclassify outliers as non-outliers or vice versa. However, one potential limitation of the modified z-score is that it is less effective for identifying outliers in datasets with a small sample size.   </div>", unsafe_allow_html = True)
@@ -125,7 +129,7 @@ with inputs_cont :
 
 		st.markdown('''
 
-				- **Working Column** : The column/attribute of the data frame, for which the user wants to recognize the outliers
+				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
 				- **Threshold**
 
 				''', unsafe_allow_html = True)
@@ -162,7 +166,7 @@ with inputs_cont :
 
 		st.markdown('''
 
-				- **Working Column** : The column/attribute of the data frame, for which the user wants to recognize the outliers
+				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
 				- **Q1** and **Q2** 
 
 				''', unsafe_allow_html = True)
@@ -201,7 +205,7 @@ with inputs_cont :
 
 		st.markdown('''
 
-				- **Working Column** : The column/attribute of the data frame, for which the user wants to recognize the outliers
+				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
 				- **Contamination** 
 
 				''', unsafe_allow_html = True)
