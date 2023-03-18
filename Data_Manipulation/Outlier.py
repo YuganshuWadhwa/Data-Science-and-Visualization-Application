@@ -52,6 +52,7 @@ class Outliers_Recognization():
         fig3, ax3 = plt.subplots(figsize=(15, 5))
         ax3.plot(self.df.index,self.df[Working_Column], label='Data With Outliers', color='b', alpha=1)
         ax3.plot(self.df_Without_Outliers.index, self.df_Without_Outliers[Working_Column], label='Data Without Outliers', color='r', alpha=1)
+        ax3.grid()
         ax3.legend()
         ax3.set_xlabel('Samples')
         ax3.set_ylabel('Value ')

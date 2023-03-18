@@ -39,6 +39,7 @@ class Smoothing_class:
         fig, ax = plt.subplots(figsize=(15, 5))
         sc = ax.plot(x1, y1)
         sc = ax.plot(x1, y2)
+        ax.grid()
         ax.set_xlabel('Time')
         ax.set_ylabel('Value')
         self.fig = fig                    
@@ -74,6 +75,7 @@ class Smoothing_class:
         min_len = min(len(y1), len(y2))
         ax.plot(x1, y1,'*-', label= 'Real Data')                                  
         ax.plot(x1[:min_len], y2[:min_len],c= 'black', label= 'Smoothed Data')
+        ax.grid()
         ax.set_xlabel('Time')
         ax.set_ylabel('Value')
         self.fig = fig                                                        # Get new array of filtered data and print the result.
@@ -96,6 +98,7 @@ class Smoothing_class:
         fig, ax = plt.subplots(figsize=(15, 5))
         sc = ax.plot(x1, y1)
         sc = ax.plot(x1, y2)
+        ax.grid()
         ax.set_xlabel('Time')
         ax.set_ylabel('Value')
         self.fig = fig

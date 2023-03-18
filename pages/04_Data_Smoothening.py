@@ -127,9 +127,13 @@ with inputs_cont :
 
 		st.markdown("<div style ='text-align: justify;'> The moving average filter works by taking the average of a set of data points over a certain window size, and using this average as the estimate of the signal value at any given point. It is used for signal processing, finance, and engineering, where the goal is to remove high-frequency noise and obtain a clearer representation of the underlying signal. </div>", unsafe_allow_html = True)
 
+		st.markdown('### ')
+
+		st.markdown(':bulb: <small> <i> :orange[After performing Moving Average, some rows will be deleted.] </i> </small>', unsafe_allow_html = True)
+
 		st.markdown('# ')
 
-		st.markdown("<h5 style = 'text-align : left; color : #0096c7;'> Parameters :  </h5>", unsafe_allow_html = True)
+		st.markdown("<h5 style = 'text-align : left; color : #0096c7;'> Parameters : </h5>", unsafe_allow_html = True)
 
 		st.markdown('''
 

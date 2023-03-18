@@ -63,6 +63,7 @@ class Interpolation:
         fig1, ax1 = plt.subplots(figsize=(15, 5))
         ax1.plot(self.interpolated_df.index[:graph_limit], self.interpolated_df[Working_Column][:graph_limit], label='Interpolated Data',color='r', alpha=0.8)
         ax1.plot(self.df.index[:graph_limit], self.df[Working_Column][:graph_limit], label='Original Data',color='b', alpha=0.8)
+        ax1.grid()
         ax1.legend()
         ax1.set_xlabel('Samples')
         ax1.set_ylabel('Value ')

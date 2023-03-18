@@ -77,7 +77,7 @@ with inputs_cont :
 		st.markdown('''
 
 				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
-				- **Threshold**
+				- **Threshold** : Z-Score threshold value
 
 				''', unsafe_allow_html = True)
 
@@ -130,7 +130,7 @@ with inputs_cont :
 		st.markdown('''
 
 				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
-				- **Threshold**
+				- **Threshold** : Modified Z-Score threshold value
 
 				''', unsafe_allow_html = True)
 
@@ -167,7 +167,8 @@ with inputs_cont :
 		st.markdown('''
 
 				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
-				- **Q1** and **Q2** 
+				- **Q1** : Lower Quantile value
+				- **Q2** : Upper Quantile value 
 
 				''', unsafe_allow_html = True)
 
@@ -206,7 +207,7 @@ with inputs_cont :
 		st.markdown('''
 
 				- **Working Column** : The column/attribute of the data frame, for which the user wants the plot after performing outlier recognition
-				- **Contamination** 
+				- **Contamination** : The amount of contamination of the data set, i.e. the proportion of outliers in the data set
 
 				''', unsafe_allow_html = True)
 
