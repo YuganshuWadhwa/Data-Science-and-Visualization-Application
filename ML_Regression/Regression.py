@@ -16,19 +16,20 @@ class Regression:
        #For testing taking data from csv 
         self.data = Data
         if isinstance(Data, pd.DataFrame):
-            self.dataframe_1 = Data
+            self.dataframe = Data
             self.dataframe_shape = Data.shape
-            self.dropColumns()
+            #self.dropColumns()
         else:
             raise Exception("No pandas dataframe was given!")
         
     ############### Drop Columns for Regression ###############
     def dropColumns(self, label_drop='date'):
-        self.dataframe=self.dataframe_1.drop(label_drop, axis=1)
+        self.dataframe=self.dataframe.drop(label_drop, axis=1)
         print("Column: ", label_drop, " is deleted.")
     
     ############### Dividing Data into Training and Test ###############
-    def split_train_test(self,label_target="lights", rows_to_keep = 16000, testsize=0.2, random_state=42, deleting_na=True, scaling=True, deleting_duplicates=True,remove_noise = True, cols_to_keep = []):
+    def split_train_test(self,label_target="lights", tolerence = 2, rows_to_keep = 16000, testsize=0.2, random_state=42, deleting_na=True, scaling=True, deleting_duplicates=True,remove_noise = True, cols_to_keep = []):
+            self.dropColumns()
             self.cols_to_keep = cols_to_keep
             self.dataframe = self.dataframe[self.cols_to_keep + [label_target]]           
             self.dataframe = self.dataframe.head(rows_to_keep)
@@ -54,13 +55,12 @@ class Regression:
                 # st.write("Duplicates have been deleted!")
             
             if scaling:
-                self.scaler = MinMaxScaler(feature_range=(0,5))
-                self.dataframe = pd.DataFrame(self.scaler.fit_transform(self.dataframe), columns=self.dataframe.columns)
+                self.scaler = MinMaxScaler(feature_range=(0,5))                
+                self.scaler = self.scaler.fit(self.dataframe)
+                self.dataframe = pd.DataFrame(self.scaler.transform(self.dataframe), columns=self.dataframe.columns)
 
             if remove_noise:
-                 self.max_vals = self.dataframe.max()
-                 self.max_vals = self.max_vals.mean()
-                 self.max_vals = 1.5
+                 self.max_vals = tolerence
                  self.threshold = self.max_vals
                  print('Threshold = ' , self.max_vals)
                  z_scores = np.abs(stats.zscore(self.dataframe[self.cols_to_keep  + [label_target]]))
@@ -90,17 +90,15 @@ class Regression:
                     self.regression = self.decisionTree(**args)  
                 else:
                     raise Exception(
-                        "Regression was not found! Avialable options are Support Vector Machine Regression (SVM), Polynomial Regression, Ridge Regression, Multiple Linear Regression, Robust Regression.")
+                        "Regression was not found! Avialable options are Support Vector Machine Regression (SVM), Gradient Boosting Regression, Decission Tree.")
                 self.y_pred = self.regression.predict(self.x_test)
                 self.y_pred2 = self.regression.predict(self.x_train)
 
-                # joblib.dump(self.regression, 'saved_model.pkl')
-
-
-                self.mse_test = [str(self.regression_name), round(mean_squared_error(self.y_test, self.y_pred), 3)]
-                self.mse_train = [str(self.regression_name), round(mean_squared_error(self.y_train, self.y_pred2), 3)]
-                self.r2_test = [str(self.regression_name),  round(r2_score(self.y_test, self.y_pred), 3)]
-                self.r2_train = [str(self.regression_name),  round(r2_score(self.y_train, self.y_pred2), 3)]            
+                self.mse_test = [ round(mean_squared_error(self.y_test, self.y_pred), 3)]
+                self.mse_train =[ round(mean_squared_error(self.y_train, self.y_pred2), 3)]
+                self.r2_test =  [ round(r2_score(self.y_test, self.y_pred), 3)]
+                self.r2_train = [ round(r2_score(self.y_train, self.y_pred2), 3)]            
+                
                 print('MSE errors', self.mse_test)
                 print("For Test Data")
                 print('R2 errors', self.r2_test)
@@ -186,9 +184,6 @@ class Regression:
 
     ############### Predict User Inputs ###############
     def regression_function(self, user_input):
-        #check wether user input is given as Pandas Dataframe
-        user_input = pd.DataFrame(self.scaler.fit_transform(user_input), columns=user_input.columns)
-
         if isinstance(user_input, pd.DataFrame):
             user_input = user_input 
             print("User Input is given as Pandas Dataframe!")
@@ -198,9 +193,9 @@ class Regression:
                 result = round(self.regression.predict(user_input)[0], 2)                
                 user_input= np.array(user_input)
                 result = np.array(result)
+                self.predicted_result = result
                 self.final_prediction = user_input + result
-                self.final_prediction = pd.DataFrame(self.scaler.inverse_transform(self.final_prediction))
-                print('The prediction for the target label ', self.label_target, '" is ', self.final_prediction.iloc[:, [-1],'.'])              
+                print('The prediction for the target label ', self.label_target, '" is ' )#self.final_prediction.iloc[:, [-1],'.'])              
                 return result 
             else:
                 print('Input data should be in this formate ',self.cols_to_keep)
@@ -209,26 +204,4 @@ class Regression:
                   "The active dataframe allows ", (len(self.dataframe.columns) - 1),
                   " input variables. The predicted colum is ", self.label_target)
         return None   
-
-
-
-
-
-
-#### Below code is to check how the code is working 
-
-# d = pd.read_csv('filtered_to_munam.csv') # dataframe
-# classa = Regression(d)
-
-# f='Appliances'
-# A = classa.split_train_test(f)
-
-# AA = classa.build_regression()
-
-# classa.plot_test_data()
-
-# classa.plot_train_data()
-
-# user_input = pd.read_csv('UserInput - Copy.csv') # dataframe
-# classa.regression_function(user_input)
 
