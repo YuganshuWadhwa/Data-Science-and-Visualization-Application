@@ -4,7 +4,9 @@ An Application for Data Science and Visualization made by students of the Master
 
 The application gives users a hands-on, user-friendly experience with data and includes a wide range of features like data manipulation, regression and classification, using artificial intelligence and machine learning.
 
-To improve the application's usability, the user is given textual details about the methods being used, suggestions and tooltips for different user inputs, and graphical outputs. [**Documentation**](https://mait-oop22-23-documentation.readthedocs.io/en/latest/)
+To improve the application's usability, the user is given textual details about the methods being used, suggestions and tooltips for different user inputs, and graphical outputs. 
+
+<small> [**Documentation**](https://mait-oop22-23-documentation.readthedocs.io/en/latest/) </small>
 
 
 # 
