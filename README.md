@@ -6,7 +6,7 @@ The application gives users a hands-on, user-friendly experience with data and i
 
 To improve the application's usability, the user is given textual details about the methods being used, suggestions and tooltips for different user inputs, and graphical outputs. 
 
-<small> [**Documentation**](https://mait-oop22-23-documentation.readthedocs.io/en/latest/) </small>
+<sup><sub> [**Documentation**](https://mait-oop22-23-documentation.readthedocs.io/en/latest/) </sub></sup>
 
 
 # 
