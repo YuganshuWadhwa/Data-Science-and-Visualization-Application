@@ -110,7 +110,7 @@ if working_df is not None :
 					x_labels = test_col_3.multiselect(label = 'Select **X-Labels** :', options = list(working_df.columns), default = None, help = 'If None is selected, then all columns are used')
 					if x_labels == [] : x_labels = None
 
-					y_label = test_col_4.selectbox(label = 'Select **Y-Label** :', options = list(working_df.columns), index = 2)
+					y_label = test_col_4.selectbox(label = 'Select **Y-Label** :', options = list(working_df.columns), index = len(list(working_df.columns))-1)
 					test_size = (test_col_5.slider(label = 'Select **Test Size** (% of Total Data) :', min_value = 20, max_value = 80, value = 20, step = 10)) / 100.
 					trees = test_col_6.slider(label = 'Select **Number of Trees** :', min_value = 1, max_value = 10000, value = 100, step = 1, help = 'Higher number leads to higher training times')
 
